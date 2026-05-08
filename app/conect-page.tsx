@@ -14,6 +14,8 @@ import { Smartphone, Loader2 } from "lucide-react";
 import { connectUazi } from "./services/conect-wpp";
 import Image from "next/image";
 import { createInstance } from "./services/create-instance";
+import { conectWebhook } from "./services/conect-webhook";
+import { socket } from "./frontserver/socket";
 
 export default function ConnectWhatsapp() {
   const [phone, setPhone] = useState("");
@@ -35,7 +37,9 @@ export default function ConnectWhatsapp() {
         setError("Não foi possível obter o QR Code.");
       }
     } catch (err) {
-      setError("Erro ao conectar com o servidor.");
+      setError(
+        err instanceof Error ? err.message : "Erro ao conectar com o servidor.",
+      );
     } finally {
       setLoading(false);
     }
@@ -46,12 +50,20 @@ export default function ConnectWhatsapp() {
         const dataInstance = await createInstance({
           name: "minha-instancia",
         });
+        const token = dataInstance?.instance?.token;
+        if (!token) {
+          throw new Error("Token não veio da API");
+        }
         setInstanceToken(dataInstance?.instance?.token || "");
+        await conectWebhook({ token });
+        console.log("Instância criada e webhook conectado com sucesso!");
       } catch (error) {
         console.error("Erro ao inicializar instância:", error);
       }
     };
-
+    socket.on("connect", () => {
+      console.log("🟢 conectado:", socket.id);
+    });
     initializeInstance();
   }, []);
 

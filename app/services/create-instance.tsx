@@ -39,9 +39,9 @@ export const createInstance = async ({
       throw new Error(data.message || "Erro ao criar instância na UAZAPI");
     }
 
-    return data;
-  } catch (error: any) {
-    console.error("Erro na UAZAPI:", error.message);
+    return (console.log("Resposta da UAZAPI:", data), data);
+  } catch (error) {
+    console.error("Erro na UAZAPI:", error);
     throw error;
   }
 };

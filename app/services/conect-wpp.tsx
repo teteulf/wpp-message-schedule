@@ -27,7 +27,8 @@ export const connectUazi = async ({ token }: { token: string }) => {
       status: data.instance?.status || "unknown",
       success: true,
     };
-  } catch (error: Error | any) {
-    return { success: false, error: error.message };
+  } catch (error) {
+    console.log(error);
+    return { success: false };
   }
 };
